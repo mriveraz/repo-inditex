@@ -1,0 +1,9 @@
+<entity-mappings>
+    <entity class="/AppZara/src/main/java/com/almacen/grupozara/AppZara/models/Brand.java" name="Brand">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="identity"/>
+            </id>
+        </attributes>
+   </entity>
+</entity-mappings>
