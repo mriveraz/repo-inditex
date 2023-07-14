@@ -192,7 +192,7 @@
 			    	</excludes>
 			
 			    </configuration>
-</plugin>
+		</plugin>
 		
 		</plugins>
 		</pluginManagement>
@@ -237,6 +237,18 @@
 					</compilerArgs>
 				</configuration>
 			</plugin>
+			
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-compiler-plugin</artifactId>
+			    <version>3.11.0</version>
+			    <configuration>
+			      <excludes>
+			        <esclude>/src/main/resources/._*.sql</esclude>
+			      </excludes>
+			    </configuration>
+  			</plugin>
+			
 		</plugins>
 
 	</build>
@@ -283,3 +295,4 @@
 	</pluginRepositories>
 
 </project>
+
