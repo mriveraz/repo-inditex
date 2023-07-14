@@ -17,6 +17,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 @PropertySource({"classpath:/resources/application.properties"})
@@ -50,8 +54,43 @@ public class AppConfig {
         System.out.println("## getDataSource: " + dataSource);
         return dataSource;
     }
+    
+    
+    @Bean
+	LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource datasource) {
 
-    @Autowired
+
+		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+		entityManagerFactoryBean.setDataSource(datasource);
+		entityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+		entityManagerFactoryBean.setPackagesToScan("com.almacen.grupozara.AppZara");
+
+		Properties jpaProperties = new Properties();
+		jpaProperties.put("hibernate.dialet","org.hinernate.dialect.MySQLDialect");
+		entityManagerFactoryBean.setJpaProperties(jpaProperties);
+		
+		return 	entityManagerFactoryBean;
+
+	}
+    
+    
+    
+    @Bean 
+
+	public  PlatformTransactionManager transactionManager(){
+
+		JpaTransactionManager txManager = new JpaTransactionManager();
+
+		txManager.setEntityManagerFactory(entityManagerFactory(getDataSource()).getObject());
+		return  txManager;
+
+	}	
+    
+        
+
+
+
+	@Autowired
     @Bean(name = "sessionFactory")
     public SessionFactory getSessionFactory(DataSource dataSource) throws Exception {
         Properties properties = new Properties();
