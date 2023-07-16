@@ -26,7 +26,7 @@ public class AppZaraApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(AppZaraApplication.class, args);
-		Persistence.generateSchema("unidadPersistencia",null);
+		Persistence.generateSchema("unidadPersistencia", null);
 	}
 
 

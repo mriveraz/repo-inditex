@@ -5,7 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest
-@Sql({"shema.sql","data.sql"})
+@Sql({"/shema.sql","/data.sql"})
 class AppZaraApplicationTests {
 
 	@Test

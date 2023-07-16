@@ -3,23 +3,20 @@ package com.almacen.grupozara.AppZara.utility;
 import java.util.Properties;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.service.ServiceRegistry;
 
-import com.almacen.grupozara.AppZara.models.Brand;
-import com.almacen.grupozara.AppZara.models.Price;
-import com.almacen.grupozara.AppZara.models.Product;
-
 public class HibernateUtil {
 
 	private static StandardServiceRegistry standardServiceRegistry;
 	private static SessionFactory sessionFactory;
 
-	// Utility method to return SessionFactory
-	public static SessionFactory getSessionFactory() {
+	static {
 
 		if (sessionFactory == null) {
 
@@ -38,22 +35,37 @@ public class HibernateUtil {
 				dbSettings.put(Environment.HBM2DDL_AUTO, "create-auto");
 
 				configuration.setProperties(dbSettings);
-				configuration.addAnnotatedClass(Product.class);
-				configuration.addAnnotatedClass(Price.class);
-				configuration.addAnnotatedClass(Brand.class);
+				configuration.addAnnotatedClass(com.almacen.grupozara.AppZara.models.Product.class);
+				configuration.addAnnotatedClass(com.almacen.grupozara.AppZara.models.Price.class);
+				configuration.addAnnotatedClass(com.almacen.grupozara.AppZara.models.Brand.class);
 
 				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
 						.applySettings(configuration.getProperties()).build();
 
-				sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+				// sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+				// Create MetadataSource
+				MetadataSources metadataSources = new MetadataSources(standardServiceRegistry);
+				// Create Metada
+				Metadata metada = metadataSources.getMetadataBuilder().build();
+				// Create SessionFactory
+				sessionFactory = metada.getSessionFactoryBuilder().build();
 
 			} catch (Exception e) {
 
 				e.printStackTrace();
+				if (standardServiceRegistry != null) {
+					StandardServiceRegistryBuilder.destroy(standardServiceRegistry);
+
+				}
 			}
 
 		}
+
+	}
+
+	// Utility method to return SessionFactory
+	public static SessionFactory getSessionFactory() {
+
 		return sessionFactory;
 	}
 }
-
