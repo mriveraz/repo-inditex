@@ -29,7 +29,7 @@ public class HibernateUtil {
 				dbSettings.put(Environment.URL, "jdbc:mysql://localhost:3306/storeZaraDB?useSSL=false");
 				dbSettings.put(Environment.USER, "root");
 				dbSettings.put(Environment.PASS, "root");
-				dbSettings.put(Environment.DIALECT, "org.hibernate.dialect.MySQ5LDialect");
+				dbSettings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL57Dialec");
 				dbSettings.put(Environment.SHOW_SQL, "true");
 				dbSettings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
 				dbSettings.put(Environment.HBM2DDL_AUTO, "create-auto");
@@ -38,9 +38,11 @@ public class HibernateUtil {
 				configuration.addAnnotatedClass(com.almacen.grupozara.AppZara.models.Product.class);
 				configuration.addAnnotatedClass(com.almacen.grupozara.AppZara.models.Price.class);
 				configuration.addAnnotatedClass(com.almacen.grupozara.AppZara.models.Brand.class);
-
-				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
-						.applySettings(configuration.getProperties()).build();
+				
+				configuration.configure("src/main/resources/hibernate.cfg.xml");
+				StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()); 
+				sessionFactory = configuration.buildSessionFactory(builder.build());
+				
 
 				// sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 				// Create MetadataSource
@@ -68,4 +70,10 @@ public class HibernateUtil {
 
 		return sessionFactory;
 	}
+	
+	public static void shutdown() {
+        // Close caches and connection pools
+        getSessionFactory().close();
+    }
+
 }

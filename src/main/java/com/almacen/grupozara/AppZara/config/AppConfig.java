@@ -1,6 +1,8 @@
 package com.almacen.grupozara.AppZara.config;
 
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -34,14 +36,16 @@ public class AppConfig {
     
     @Autowired
     DataSource dataSource;
-
+    
+    @Autowired
     public AppConfig(Environment env) {
         this.env = env;
     }
+    
+    
 
 
-
-    @Bean(name = "dataSource")
+	@Bean(name = "dataSource")
     @ConfigurationProperties(prefix="spring.datasource")
     public DataSource getDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -60,16 +64,25 @@ public class AppConfig {
 	LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource datasource) {
 
 
-		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-		entityManagerFactoryBean.setDataSource(datasource);
-		entityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-		entityManagerFactoryBean.setPackagesToScan("com.almacen.grupozara.AppZara");
-
-		Properties jpaProperties = new Properties();
-		jpaProperties.put("hibernate.dialet","org.hinernate.dialect.MySQLDialect");
-		entityManagerFactoryBean.setJpaProperties(jpaProperties);
+		LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
+		emf.setDataSource(datasource);
+		emf.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+		emf.setPackagesToScan(new String[]{"com.almacen.grupozara.AppZara"});
+		emf.setPersistenceUnitName("unidadPersistencia");
 		
-		return 	entityManagerFactoryBean;
+		
+		//Properties jpaProperties = new Properties();
+		/*
+		 * Map<String, Object> jpaProperties = new HashMap<>();
+		 * jpaProperties.put("hibernate.dialet","org.hinernate.dialect.MySQL5Dialect");
+		 */
+		//emf.setJpaPropertyMap(jpaProperties);
+		  Map<String, Object> properties = new HashMap<String, Object>();
+		  properties.put("hibernate.hbm2ddl.auto", env.getProperty("spring.jpa.hibernate.ddl-auto"));
+		  properties.put("hibernate.dialect", env.getProperty("spring.jpa.properties.hibernate.dialect"));
+		  emf.setJpaPropertyMap(properties);
+		  
+		  return 	emf;
 
 	}
     
@@ -95,7 +108,7 @@ public class AppConfig {
     public SessionFactory getSessionFactory(DataSource dataSource) throws Exception {
         Properties properties = new Properties();
         // See: application.properties
-        properties.put("hibernate.dialect", env.getProperty("org.hibernate.dialect.MySQLDialect"));
+        properties.put("hibernate.dialect", env.getProperty("org.hibernate.dialect.MySQL5Dialect"));
         properties.put("hibernate.show_sql", env.getProperty("spring.jpa.show-sql"));
         properties.put("spring.datasource.driver-class-name", env.getProperty("com.mysql.cj.jdbc.Driver"));
         properties.put("spring.jpa.hibernate.ddl-auto", env.getProperty("update"));
